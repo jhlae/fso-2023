@@ -1,5 +1,15 @@
 import { useState } from "react";
 
+const StatisticLine = ({ text, value, unit }) => {
+  return (
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+      <td>{unit}</td>
+    </tr>
+  );
+};
+
 const Statistics = ({ answers, total, avg, positive }) => {
   const [hasFeedbackGiven, setHasFeedbackGiven] = useState(false);
 
@@ -12,16 +22,27 @@ const Statistics = ({ answers, total, avg, positive }) => {
       <h2>Statistics</h2>
       {hasFeedbackGiven && (
         <div>
-          {answers.map((answer, i) => {
-            return (
-              <p key={i}>
-                {answer.label} {answer.amount}
-              </p>
-            );
-          })}
-          <p>all {total}</p>
-          <p>average {avg}</p>
-          <p>positive {positive} %</p>
+          <table>
+            <tbody>
+              {answers.map((answer, i) => {
+                return (
+                  <StatisticLine
+                    key={i}
+                    text={answer.label}
+                    value={answer.amount}
+                  />
+                );
+              })}
+              <StatisticLine key={3} text={"all"} value={total} />
+              <StatisticLine key={4} text={"average"} value={avg} />
+              <StatisticLine
+                key={5}
+                text={"positive"}
+                value={positive}
+                unit="%"
+              />
+            </tbody>
+          </table>
         </div>
       )}
       {!hasFeedbackGiven && <p>No feedback given!</p>}
@@ -29,9 +50,9 @@ const Statistics = ({ answers, total, avg, positive }) => {
   );
 };
 
-const Button = (props) => {
-  return "";
-};
+const Button = (props) => (
+  <button onClick={props.handleClick}>{props.text}</button>
+);
 
 const App = () => {
   // tallenna napit omaan tilaansa
@@ -72,7 +93,7 @@ const App = () => {
   };
 
   /* 
-  Get amount of positive feedbacks
+  Return the percentage of positive feedbacks
   */
   const getPositiveFeedbackPercentage = (answers) => {
     let numberofFeedback = parseInt(getNumberofFeedback(answers));
@@ -82,7 +103,6 @@ const App = () => {
         positiveFeedbackNumericSum += ans.amount;
       }
     });
-
     return parseFloat(positiveFeedbackNumericSum / numberofFeedback) * 100;
   };
 
@@ -108,22 +128,16 @@ const App = () => {
   };
 
   let answers = getAnswers();
-  let total = getNumberofFeedback(getAnswers());
-  let avg = getFeedbackAverage(getAnswers());
-  let positive = getPositiveFeedbackPercentage(getAnswers());
+  let total = getNumberofFeedback(answers);
+  let avg = getFeedbackAverage(answers);
+  let positive = getPositiveFeedbackPercentage(answers);
 
   return (
     <div id="root">
       <h2>Give feedback</h2>
-      <button className="good" onClick={() => handleClick("good")}>
-        good
-      </button>
-      <button className="neutral" onClick={() => handleClick("neutral")}>
-        neutral
-      </button>
-      <button className="bad" onClick={() => handleClick("bad")}>
-        bad
-      </button>
+      <Button handleClick={() => handleClick("good")} text="good" />
+      <Button handleClick={() => handleClick("neutral")} text="neutral" />
+      <Button handleClick={() => handleClick("bad")} text="bad" />
 
       <Statistics
         answers={answers}
