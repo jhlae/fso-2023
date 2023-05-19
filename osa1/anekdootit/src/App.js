@@ -32,7 +32,10 @@ const App = () => {
     return rand;
   };
 
-  const getAnecdoteWithMostVotesIdx = (votes) => {
+  /* 
+  Function goes through an array of votes saved in state and returns an anecdote with most votes.
+  */
+  const getAnecdoteWithMostVotes = (votes) => {
     let mostVotesIdx = 0; // Index for most votes, will be updated as we'll go through the array containing the votes
     {
       votes.map((val, i) => {
@@ -41,7 +44,7 @@ const App = () => {
         }
       });
     }
-    console.log(mostVotesIdx);
+    // console.log(mostVotesIdx);
     return anecdotes[mostVotesIdx];
   };
 
@@ -77,7 +80,7 @@ const App = () => {
       <button onClick={() => handleVote(selectedIdx)}>vote</button>
 
       <h2>Anecdote with most votes</h2>
-      {votes && getAnecdoteWithMostVotesIdx(votes)}
+      {votes && getAnecdoteWithMostVotes(votes)}
     </div>
   );
 };
