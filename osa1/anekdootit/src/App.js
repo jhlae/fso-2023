@@ -35,9 +35,9 @@ const App = () => {
   const getAnecdoteWithMostVotesIdx = (votes) => {
     let mostVotesIdx = 0; // Index for most votes, will be updated as we'll go through the array containing the votes
     {
-      votes.map((val) => {
-        if (val > mostVotesIdx) {
-          mostVotesIdx = val;
+      votes.map((val, i) => {
+        if (val > votes[mostVotesIdx]) {
+          mostVotesIdx = i;
         }
       });
     }
