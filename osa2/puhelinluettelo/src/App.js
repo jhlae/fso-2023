@@ -20,6 +20,12 @@ const App = () => {
     });
   }, []);
 
+  const updatePersonList = () => {
+    personService.getAllPersons().then((personList) => {
+      setPersons(personList);
+    });
+  };
+
   const handleNameChange = (event) => {
     console.log(event.target.value);
     setNewName(event.target.value);
@@ -38,16 +44,34 @@ const App = () => {
     // Checks whether we already have same person in our phonebook
     let found = personNames.find((element) => element.name === newName);
 
-    if (found) {
+    if (found && found.id) {
       console.log("found");
-      alert(`${newName} is already added to phonebook!`);
+      if (
+        window.confirm(
+          `Person ${newName} already found, do you want to update the phone number?`
+        )
+      ) {
+        const personObj = {
+          name: newName,
+          number: newNumber,
+        };
+        personService
+          .updatePerson(found.id, personObj)
+          .then((returnedPerson) => {
+            console.log(returnedPerson);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        updatePersonList();
+      }
     } else {
       const personObj = {
         name: newName,
         number: newNumber,
       };
 
-      personService.create(personObj).then((returnedPerson) => {
+      personService.createPerson(personObj).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
         // Let's empty the input fields for name and number
         setNewName("");
@@ -62,6 +86,7 @@ const App = () => {
       personService.deletePerson(personId).then((returnedPerson) => {
         console.log(returnedPerson);
       });
+      updatePersonList();
     }
   };
 
