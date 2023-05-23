@@ -1,16 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import personService from "./services/person";
+
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-1234567" },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [showAllNumbers, setShowAllNumbers] = useState(true);
   const [filteredNumbers, setFilteredNumbers] = useState([
     { name: "", number: "" },
   ]);
+
+  // Insert initial persons to phonebook by using personService module
+  useEffect(() => {
+    personService.getAllPersons().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
+  }, []);
 
   const handleNameChange = (event) => {
     console.log(event.target.value);
@@ -26,6 +34,7 @@ const App = () => {
     event.preventDefault();
 
     let personNames = persons;
+
     // Checks whether we already have same person in our phonebook
     let found = personNames.find((element) => element.name === newName);
 
@@ -37,11 +46,22 @@ const App = () => {
         name: newName,
         number: newNumber,
       };
-      setPersons(persons.concat(personObj));
 
-      // Let's empty the input fields for name and number
-      setNewName("");
-      setNewNumber("");
+      personService.create(personObj).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        // Let's empty the input fields for name and number
+        setNewName("");
+        setNewNumber("");
+      });
+    }
+  };
+
+  const handleDeletePerson = (personId, personName) => {
+    console.log("delete", personId);
+    if (window.confirm(`Delete ${personName}?`)) {
+      personService.deletePerson(personId).then((returnedPerson) => {
+        console.log(returnedPerson);
+      });
     }
   };
 
@@ -78,7 +98,7 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons persons={persons} />
+      <Persons persons={persons} handleDeletePerson={handleDeletePerson} />
     </div>
   );
 };
