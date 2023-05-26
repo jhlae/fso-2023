@@ -13,7 +13,8 @@ const App = () => {
   const [filteredNumbers, setFilteredNumbers] = useState([
     { name: "", number: "" },
   ]);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [notificationType, setNotificationType] = useState("");
 
   // Insert initial persons to phonebook by using personService module
   useEffect(() => {
@@ -38,6 +39,22 @@ const App = () => {
     setNewNumber(event.target.value);
   };
 
+  /* 
+  Helper function to handle all notifications and to remove them after 3 seconds 
+  */
+  const handleNotification = (msg, type) => {
+    if (msg && type) {
+      setNotificationMessage(msg);
+      setNotificationType(type);
+    } else {
+      return false;
+    }
+    const timer = setTimeout(() => {
+      setNotificationMessage("");
+    }, 3000);
+    return () => clearTimeout(timer);
+  };
+
   const addPerson = (event) => {
     event.preventDefault();
 
@@ -60,10 +77,16 @@ const App = () => {
         personService
           .updatePerson(found.id, personObj)
           .then((returnedPerson) => {
-            console.log(returnedPerson);
+            handleNotification(
+              `Person ${personObj.name} updated.`,
+              "notification"
+            );
           })
           .catch((error) => {
-            console.log(error);
+            handleNotification(
+              `Could not update person's information.`,
+              "notification"
+            );
           });
         updatePersonList();
       }
@@ -78,7 +101,7 @@ const App = () => {
         // Let's empty the input fields for name and number
         setNewName("");
         setNewNumber("");
-        setErrorMessage(`${returnedPerson.name} was added!`);
+        handleNotification(`${returnedPerson.name} was added!`, "notification");
       });
     }
   };
@@ -92,7 +115,7 @@ const App = () => {
           console.log(returnedPerson);
         })
         .catch((error) => {
-          setErrorMessage(`Already deleted.`);
+          handleNotification(`${personName} already deleted.`, "error");
         });
       updatePersonList();
     }
@@ -116,7 +139,14 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      {errorMessage ? <Notification message={errorMessage} /> : ""}
+      {notificationMessage ? (
+        <Notification
+          message={notificationMessage}
+          notificationType={notificationType}
+        />
+      ) : (
+        ""
+      )}
       {/* <div>
         filter shown with: <input onChange={filterPhoneBookResults} />
       </div> */}
