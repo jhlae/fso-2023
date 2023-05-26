@@ -3,6 +3,7 @@ import personService from "./services/person";
 
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -12,6 +13,7 @@ const App = () => {
   const [filteredNumbers, setFilteredNumbers] = useState([
     { name: "", number: "" },
   ]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Insert initial persons to phonebook by using personService module
   useEffect(() => {
@@ -76,6 +78,7 @@ const App = () => {
         // Let's empty the input fields for name and number
         setNewName("");
         setNewNumber("");
+        setErrorMessage(`${returnedPerson.name} was added!`);
       });
     }
   };
@@ -83,9 +86,14 @@ const App = () => {
   const handleDeletePerson = (personId, personName) => {
     console.log("delete", personId);
     if (window.confirm(`Delete ${personName}?`)) {
-      personService.deletePerson(personId).then((returnedPerson) => {
-        console.log(returnedPerson);
-      });
+      personService
+        .deletePerson(personId)
+        .then((returnedPerson) => {
+          console.log(returnedPerson);
+        })
+        .catch((error) => {
+          setErrorMessage(`Already deleted.`);
+        });
       updatePersonList();
     }
   };
@@ -108,10 +116,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {errorMessage ? <Notification message={errorMessage} /> : ""}
       {/* <div>
         filter shown with: <input onChange={filterPhoneBookResults} />
       </div> */}
-
       <h2>Add a new</h2>
       <PersonForm
         onSubmit={addPerson}
@@ -120,9 +128,7 @@ const App = () => {
         newNumber={newNumber}
         handleNumberChange={handleNumberChange}
       />
-
       <h2>Numbers</h2>
-
       <Persons persons={persons} handleDeletePerson={handleDeletePerson} />
     </div>
   );
