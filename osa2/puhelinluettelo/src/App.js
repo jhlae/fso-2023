@@ -75,12 +75,13 @@ const App = () => {
           number: newNumber,
         };
         personService
-          .updatePerson(found.id, personObj)
+          .updatePerson(found.id)
           .then((returnedPerson) => {
             handleNotification(
-              `Person ${personObj.name} updated.`,
+              `Person ${returnedPerson.name} updated.`,
               "notification"
             );
+            updatePersonList();
           })
           .catch((error) => {
             handleNotification(
@@ -88,7 +89,6 @@ const App = () => {
               "notification"
             );
           });
-        updatePersonList();
       }
     } else {
       const personObj = {
@@ -96,12 +96,16 @@ const App = () => {
         number: newNumber,
       };
 
-      personService.createPerson(personObj).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
+      personService.createPerson(personObj).then((returnedPersons) => {
+        setPersons(returnedPersons);
+        let lastAddedPerson = returnedPersons[returnedPersons.length - 1];
         // Let's empty the input fields for name and number
         setNewName("");
         setNewNumber("");
-        handleNotification(`${returnedPerson.name} was added!`, "notification");
+        handleNotification(
+          `${lastAddedPerson?.name} was added!`,
+          "notification"
+        );
       });
     }
   };
@@ -113,11 +117,11 @@ const App = () => {
         .deletePerson(personId)
         .then((returnedPerson) => {
           console.log(returnedPerson);
+          updatePersonList();
         })
         .catch((error) => {
           handleNotification(`${personName} already deleted.`, "error");
         });
-      updatePersonList();
     }
   };
 
