@@ -4,7 +4,7 @@ const app = express();
 const cors = require("cors");
 const blogRouter = require("./controllers/blogs");
 const middleware = require("./utils/middleware");
-const { info, error } = require("./utils/logger");
+const { info } = require("./utils/logger");
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
