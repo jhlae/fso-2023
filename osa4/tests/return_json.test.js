@@ -2,8 +2,18 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const Blog = require("../models/blogentry");
-
 const api = supertest(app);
+const initialBlogs = require("./_BLOGS");
+
+beforeEach(async () => {
+  await Blog.deleteMany({});
+  await Blog.insertMany(initialBlogs.multipleBloglistEntries);
+});
+
+const blogsEntriesCount = async () => {
+  const blogEntries = await Blog.find({});
+  return blogEntries.map((entry) => entry.toJSON());
+};
 
 describe("Check that the blog list includes some blogs and that field ID exists instead of _id.", () => {
   test("blogs are returned as json", async () => {
@@ -23,11 +33,6 @@ describe("Check that the blog list includes some blogs and that field ID exists 
 
   describe("Test inserting a blog post.", () => {
     test("One can insert blog entries to bloglist via POST request.", async () => {
-      const blogsEntriesCount = async () => {
-        const blogEntries = await Blog.find({});
-        return blogEntries.map((entry) => entry.toJSON());
-      };
-
       const newTestBlogEntry = {
         title: "Test post",
         author: "Firstname Lastname",
@@ -49,6 +54,20 @@ describe("Check that the blog list includes some blogs and that field ID exists 
         blogsCountBeforeInsert.length + 1
       );
     });
+  });
+});
+
+describe("Test deleting a blog post.", () => {
+  test("204 No content if deletion is successful.", async () => {
+    const blogCountBeforeDeletion = await Blog.find({});
+    const blogEntryToBeDeleted = blogCountBeforeDeletion[0];
+
+    await api.delete(`/api/blogs/${blogEntryToBeDeleted.id}`).expect(204);
+
+    const blogCountAfterDeletion = await Blog.find({});
+    expect(blogCountAfterDeletion).toHaveLength(
+      blogCountBeforeDeletion.length - 1
+    );
   });
 });
 
