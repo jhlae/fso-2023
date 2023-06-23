@@ -58,56 +58,25 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault();
 
-    let personNames = persons;
-
-    // Checks whether we already have same person in our phonebook
-    let found = personNames.find((element) => element.name === newName);
-
-    if (found && found.id) {
-      console.log("found");
-      if (
-        window.confirm(
-          `Person ${newName} already found, do you want to update the phone number?`
-        )
-      ) {
-        const personObj = {
-          name: newName,
-          number: newNumber,
-        };
-        personService
-          .updatePerson(found.id)
-          .then((returnedPerson) => {
-            handleNotification(
-              `Person ${returnedPerson.name} updated.`,
-              "notification"
-            );
-            updatePersonList();
-          })
-          .catch((error) => {
-            handleNotification(
-              `Could not update person's information.`,
-              "notification"
-            );
-          });
-      }
-    } else {
-      const personObj = {
-        name: newName,
-        number: newNumber,
-      };
-
-      personService.createPerson(personObj).then((returnedPersons) => {
-        setPersons(returnedPersons);
-        let lastAddedPerson = returnedPersons[returnedPersons.length - 1];
-        // Let's empty the input fields for name and number
-        setNewName("");
-        setNewNumber("");
+    const personObj = {
+      name: newName,
+      number: newNumber,
+    };
+    personService
+      .createPerson(personObj)
+      .then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
         handleNotification(
-          `${lastAddedPerson?.name} was added!`,
+          `Added ${returnedPerson.name} to phonebook`,
           "notification"
         );
+        setNewName("");
+        setNewNumber("");
+      })
+      .catch((error) => {
+        console.log(error.response.data.error);
+        handleNotification(`${error.response.data.error}`, "error");
       });
-    }
   };
 
   const handleDeletePerson = (personId, personName) => {
@@ -117,6 +86,7 @@ const App = () => {
         .deletePerson(personId)
         .then((returnedPerson) => {
           console.log(returnedPerson);
+          handleNotification(`${personName} deleted.`, "notification");
           updatePersonList();
         })
         .catch((error) => {
@@ -124,21 +94,6 @@ const App = () => {
         });
     }
   };
-
-  // let filteredPersons = "";
-
-  // const filterPhoneBookResults = (event) => {
-  //   setShowAllNumbers(false);
-  //   const numbers = showAllNumbers
-  //     ? persons
-  //     : persons.find((person) =>
-  //         person.name.toLowerCase().includes(event.target.value.toLowerCase())
-  //       );
-  //   console.log(numbers);
-  //   setFilteredNumbers(numbers);
-  // };
-
-  // let numbersList = showAllNumbers ? persons : filteredNumbers;
 
   return (
     <div>
