@@ -1,9 +1,11 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1ybW9uZ28iLCJpZCI6IjY0OTU0OTFiNmQwOTFlZGQ2YWJjMzc2YSIsImlhdCI6MTY4NzUwNTE5MywiZXhwIjoxNjg3NTA2OTkzfQ.2c5x7_Y4JDdZg5HxFbtTAxuXvBR_FQFoa30WaYn6HcA
 
 {
-"title": "Post title 2",
-"author": "Jorma Teräs",
-"url": "http://jormateras.com",
-"likes": "125222"
+"title": "Post title",
+"author": "Mr. Dijsktra",
+"url": "https://example.com",
+"likes": "56",
+"userId": "6495491b6d091edd6abc376a"
 }
