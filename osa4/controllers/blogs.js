@@ -42,8 +42,31 @@ blogsRouter.post("/", async (req, res) => {
   });
 
   await user.save();
-
   res.status(201).json(savedEntry.toJSON());
+});
+
+blogsRouter.put("/:id", async (req, res) => {
+  const decodedToken = jwt.verify(getTokenFromHeader(req), process.env.SECRET);
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: "token invalid" });
+  }
+
+  const user = await User.findById(decodedToken.id);
+  const username = await user.username;
+  const name = await user.name;
+
+  const blog = req.body;
+  const id = req.params.id;
+  // console.log(id);
+  const updatedBlogEntry = await Blog.findByIdAndUpdate(id, blog, {
+    new: true,
+  }).populate("user", { username: username, name: name });
+
+  if (updatedBlogEntry) {
+    res.status(200).json(updatedBlogEntry.toJSON());
+  } else {
+    res.status(404).end();
+  }
 });
 
 blogsRouter.delete("/:id", async (req, res) => {
