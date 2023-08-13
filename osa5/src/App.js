@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
+
 import Notification from "./components/Notification";
+
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
+
+  const [message, setMessage] = useState(null);
+  const [notificationType, setNotificationType] = useState("");
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
@@ -54,12 +60,14 @@ const App = () => {
       window.localStorage.setItem("loggedInUser", JSON.stringify(user));
 
       setUser(user);
+      blogService.setToken(user.token);
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setErrorMessage("wrong credentials");
+      setNotificationType("error");
+      setMessage("Wrong credentials!");
       setTimeout(() => {
-        setErrorMessage(null);
+        setMessage(null);
       }, 5000);
     }
   };
@@ -67,6 +75,36 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.clear();
     setUser(null); // set state user to null
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewBlog({ ...newBlog, [name]: value });
+  };
+
+  const handleCreateBlog = (event) => {
+    event.preventDefault();
+    createBlog(newBlog.title, newBlog.author, newBlog.url);
+    setNewBlog({ title: "", author: "", url: "" });
+  };
+
+  const createBlog = async (title, author, url) => {
+    try {
+      const blog = await blogService.create({
+        title,
+        author,
+        url,
+      });
+      setBlogs(blogs.concat(blog));
+      setNotificationType("notification");
+      setMessage(`a new blog ${title} by ${author} added!`);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+    } catch (exception) {
+      setNotificationType("error");
+      setMessage("error: " + exception.response.data.error);
+    }
   };
 
   useEffect(() => {
@@ -78,12 +116,15 @@ const App = () => {
     if (loggedUserJSON) {
       const parsedUser = JSON.parse(loggedUserJSON);
       setUser(parsedUser);
+      blogService.setToken(parsedUser.token);
     }
   }, []);
 
   return (
     <div>
-      <Notification message={errorMessage} />
+      {message && (
+        <Notification message={message} notificationType={notificationType} />
+      )}
 
       {!user && loginForm()}
       {user && (
@@ -94,6 +135,42 @@ const App = () => {
             logout
           </button>
           {blogListing()}
+
+          <div>
+            <h2>Create new blog</h2>
+            <form onSubmit={handleCreateBlog}>
+              <div>
+                title
+                <input
+                  name="title"
+                  type="text"
+                  value={newBlog.title}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                author
+                <input
+                  name="author"
+                  type="text"
+                  value={newBlog.author}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                url
+                <input
+                  name="url"
+                  type="text"
+                  value={newBlog.url}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <button id="create-blog-btn" type="submit">
+                create
+              </button>
+            </form>
+          </div>
         </div>
       )}
     </div>

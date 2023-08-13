@@ -28,7 +28,7 @@ router.post("/", userExtractor, async (request, response) => {
 
   const createdBlog = await blog.save();
 
-  user.blogs = user.blogs.concat(createdBlog._id);
+  user.blogs = user.blogs?.concat(createdBlog._id);
   await user.save();
 
   response.status(201).json(createdBlog);

@@ -1,3 +1,4 @@
+import "./notification.css";
 const Notification = ({ message, notificationType }) => {
   let notificationClassName = notificationType ?? "notification";
 
