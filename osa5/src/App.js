@@ -145,15 +145,17 @@ const App = () => {
             logout
           </button>
 
-          {blogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              username={user.username}
-              updateBlogLikes={updateBlogLikes}
-              noUserFoundErrorMsg={noUserFoundErrorMsg}
-            />
-          ))}
+          {blogs
+            .sort((a, b) => b.likes - a.likes) // descending sort by amout of likes https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#sorting_array_of_objects
+            .map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                username={user.username}
+                updateBlogLikes={updateBlogLikes}
+                noUserFoundErrorMsg={noUserFoundErrorMsg}
+              />
+            ))}
 
           <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
             <BlogForm createNewBlog={createNewBlog} />
