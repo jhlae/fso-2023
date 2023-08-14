@@ -48,9 +48,6 @@ const App = () => {
     </div>
   );
 
-  const blogListing = () =>
-    blogs.map((blog) => <Blog key={blog.id} blog={blog} />);
-
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -126,7 +123,11 @@ const App = () => {
           <button id="logout-btn" onClick={handleLogout}>
             logout
           </button>
-          {blogListing()}
+
+          {blogs.map((blog) => (
+            <Blog key={blog.id} blog={blog} username={user.username} />
+          ))}
+
           <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
             <BlogForm createNewBlog={createNewBlog} />
           </Togglable>
