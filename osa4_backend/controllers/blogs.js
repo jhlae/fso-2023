@@ -55,7 +55,7 @@ router.delete("/:id", userExtractor, async (request, response) => {
     return response.status(401).json({ error: "operation not permitted" });
   }
 
-  user.blogs = user.blogs.filter((b) => b.toString() !== blog.id.toString());
+  user.blogs = user.blogs?.filter((b) => b.toString() !== blog.id.toString()); // did not work without checking user.blogs exists
 
   await user.save();
   await blog.remove();
