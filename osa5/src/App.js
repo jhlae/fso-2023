@@ -77,6 +77,14 @@ const App = () => {
     setUser(null); // set state user to null
   };
 
+  const noUserFoundErrorMsg = () => {
+    setNotificationType("error");
+    setMessage("Error: User was not found and no likes updated.");
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  };
+
   const createNewBlog = async (title, author, url) => {
     try {
       const blog = await blogService.create({
@@ -93,6 +101,19 @@ const App = () => {
     } catch (exception) {
       setNotificationType("error");
       setMessage("error: " + exception.response.data.error);
+    }
+  };
+
+  const updateBlogLikes = async (id, blogToUpdate) => {
+    try {
+      const updatedBlog = await blogService.update(id, blogToUpdate);
+      const newBlogs = blogs.map((blog) =>
+        blog.id === id ? updatedBlog : blog
+      );
+      setBlogs(newBlogs);
+    } catch (exception) {
+      setNotificationType("error");
+      setMessage("Error: " + exception.response.data.error);
     }
   };
 
@@ -125,7 +146,13 @@ const App = () => {
           </button>
 
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} username={user.username} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              username={user.username}
+              updateBlogLikes={updateBlogLikes}
+              noUserFoundErrorMsg={noUserFoundErrorMsg}
+            />
           ))}
 
           <Togglable buttonLabel="Create new blog" ref={blogFormRef}>

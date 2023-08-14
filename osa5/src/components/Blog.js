@@ -1,10 +1,29 @@
 import { useState } from "react";
 
-const Blog = ({ blog, username }) => {
+const Blog = ({ blog, username, updateBlogLikes, noUserFoundErrorMsg }) => {
   const [visible, setVisible] = useState(false);
 
   const toggleVisibility = () => {
     setVisible(!visible);
+  };
+
+  const handleClickLikeBtn = () => {
+    const newLikes = blog.likes + 1; // New like count to be applied to a blog post
+
+    if (blog.user) {
+      // For the example list of blog entries, there are no user object, check that it exists.
+      // If not, notify user pressing the like button has no effect.
+      const blogToAddLikes = {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: newLikes,
+        user: blog.user.id,
+      };
+      updateBlogLikes(blog.id, blogToAddLikes);
+    } else {
+      noUserFoundErrorMsg();
+    }
   };
 
   const blogStyle = {
@@ -31,7 +50,10 @@ const Blog = ({ blog, username }) => {
         <div className="blog-details__extra">
           <div>{blog.url}</div>
           <div>
-            Likes: {blog.likes} <button id="like-btn">like</button>
+            Likes: {blog.likes}{" "}
+            <button id="like-btn" onClick={handleClickLikeBtn}>
+              like
+            </button>
             {""}
           </div>
           <div>{username}</div>
