@@ -87,7 +87,7 @@ const App = () => {
 
   const createNewBlog = async (title, author, url) => {
     try {
-      const blog = await blogService.create({
+      const blog = await blogService.createBlog({
         title,
         author,
         url,
@@ -106,13 +106,28 @@ const App = () => {
 
   const updateBlogLikes = async (id, blogToUpdate) => {
     try {
-      const updatedBlog = await blogService.update(id, blogToUpdate);
+      const updatedBlog = await blogService.updateBlog(id, blogToUpdate);
       const newBlogs = blogs.map((blog) =>
         blog.id === id ? updatedBlog : blog
       );
       setBlogs(newBlogs);
     } catch (exception) {
       setNotificationType("error");
+      setMessage("Error: " + exception.response.data.error);
+    }
+  };
+
+  const deleteBlogEntry = async (blogId) => {
+    try {
+      await blogService.deleteBlog(blogId);
+      const updatedBlogs = blogs.filter((blog) => blog.id !== blogId);
+      setBlogs(updatedBlogs);
+      setNotificationType("notification");
+      setMessage("Blog was removed!");
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+    } catch (exception) {
       setMessage("Error: " + exception.response.data.error);
     }
   };
@@ -154,6 +169,7 @@ const App = () => {
                 username={user.username}
                 updateBlogLikes={updateBlogLikes}
                 noUserFoundErrorMsg={noUserFoundErrorMsg}
+                deleteBlogEntry={deleteBlogEntry}
               />
             ))}
 

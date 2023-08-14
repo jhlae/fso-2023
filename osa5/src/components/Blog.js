@@ -1,6 +1,12 @@
 import { useState } from "react";
 
-const Blog = ({ blog, username, updateBlogLikes, noUserFoundErrorMsg }) => {
+const Blog = ({
+  blog,
+  username,
+  updateBlogLikes,
+  noUserFoundErrorMsg,
+  deleteBlogEntry,
+}) => {
   const [visible, setVisible] = useState(false);
 
   const toggleVisibility = () => {
@@ -23,6 +29,16 @@ const Blog = ({ blog, username, updateBlogLikes, noUserFoundErrorMsg }) => {
       updateBlogLikes(blog.id, blogToAddLikes);
     } else {
       noUserFoundErrorMsg();
+    }
+  };
+
+  const handleClickDeleteEntry = () => {
+    if (window.confirm(`Remove blog titled ${blog.title} by ${blog.author}?`)) {
+      try {
+        deleteBlogEntry(blog.id);
+      } catch (exception) {
+        console.log(exception);
+      }
     }
   };
 
@@ -57,6 +73,9 @@ const Blog = ({ blog, username, updateBlogLikes, noUserFoundErrorMsg }) => {
             {""}
           </div>
           <div>{username}</div>
+          <button id="delete-btn" onClick={handleClickDeleteEntry}>
+            delete
+          </button>
         </div>
       )}
     </div>

@@ -12,7 +12,7 @@ const getAll = () => {
   return req.then((res) => res.data);
 };
 
-const create = async (newObject) => {
+const createBlog = async (newObject) => {
   const config = {
     headers: { Authorization: token },
   };
@@ -20,10 +20,21 @@ const create = async (newObject) => {
   return res.data;
 };
 
-const update = async (id, newObject) => {
-  const res = await axios.put(`${baseUrl}/${id}`, newObject);
+const updateBlog = async (id, newObject) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+  const res = await axios.put(`${baseUrl}/${id}`, newObject, config);
+  return res.data;
+};
+
+const deleteBlog = async (id) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+  const res = await axios.delete(`${baseUrl}/${id}`, config);
   return res.data;
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { setToken, getAll, create, update };
+export default { setToken, getAll, createBlog, updateBlog, deleteBlog };
