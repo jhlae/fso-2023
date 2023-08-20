@@ -7,7 +7,6 @@ import reducer from "./reducer";
 const store = createStore(reducer);
 
 const App = () => {
-
   const registerFeedback = (type) => {
     store.dispatch({ type });
   };
