@@ -22,7 +22,7 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject);
 
-export const reducer = (state = [], action) => {
+export const anecdoteReducer = (state = [], action) => {
   // console.log("action", action);
   switch (action.type) {
     case "INITIALIZE":
@@ -39,8 +39,7 @@ export const reducer = (state = [], action) => {
           votes: noteToChange.payload.votes + 1,
         },
       };
-
-      return state.map((anecdote) =>
+      return [...state].map((anecdote) =>
         anecdote.payload.id === noteToChange.payload.id ? changedNote : anecdote
       );
 
