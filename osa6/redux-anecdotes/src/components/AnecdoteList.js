@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { addVote, initializeAnecdotes } from "../reducers/anecdoteReducer";
+import {
+  initializeAnecdotes,
+  addVoteToAnecdote,
+} from "../reducers/anecdoteReducer";
 
 const AnecdoteForm = () => {
   const anecdotes = useSelector((state) =>
     state.filter
       ? state.anecdotes.filter((anecdote) =>
-          anecdote.payload.content
-            .toLowerCase()
-            .includes(state.filter.toLowerCase())
+          anecdote.content.toLowerCase().includes(state.filter.toLowerCase())
         )
       : state.anecdotes
   );
@@ -16,25 +17,25 @@ const AnecdoteForm = () => {
   const dispatch = useDispatch();
 
   const handleVote = (id) => {
-    dispatch(addVote(id));
+    dispatch(addVoteToAnecdote(id));
   };
 
   useEffect(() => {
+    // console.log("useEffect fired");
     dispatch(initializeAnecdotes());
   }, [dispatch]);
 
   return (
     <>
       {anecdotes
-        .sort((a, b) => b.payload.votes - a.payload.votes)
+        .slice()
+        .sort((a, b) => b.votes - a.votes)
         .map((anecdote) => (
-          <div key={anecdote.payload.id}>
-            <div>{anecdote.payload.content}</div>
+          <div key={anecdote.id}>
+            <div>{anecdote.content}</div>
             <div>
-              has {anecdote.payload.votes}
-              <button onClick={() => handleVote(anecdote.payload.id)}>
-                vote
-              </button>
+              has {anecdote.votes}
+              <button onClick={() => handleVote(anecdote.id)}>vote</button>
             </div>
           </div>
         ))}
