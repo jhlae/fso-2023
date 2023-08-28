@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
-  useMatch,
+  useMatch, useNavigate,
   Routes, Route, Link
 } from 'react-router-dom'
 
@@ -17,6 +17,15 @@ const Menu = () => {
     </div>
   )
 }
+
+const Notification = ({ notification }) => {
+  return (
+    <div className="notification">
+      {notification}
+    </div>
+  );
+};
+
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
@@ -69,6 +78,7 @@ const CreateNew = (props) => {
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
 
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -78,6 +88,7 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    navigate("/");
   }
 
   return (
@@ -120,8 +131,19 @@ const App = () => {
       id: 2
     }
   ])
+  const [notification, setNotification] = useState('')
+
+  useEffect(() => {
+    const notificationTimer = setTimeout(() => {
+      setNotification("");
+    }, 5000);
+    return() => {
+      clearTimeout(notificationTimer);
+    };
+  }, [notification]);
 
   const match = useMatch("/anecdotes/:id");
+
   const anecdote = match
     ? anecdotes.find((anecdote) => anecdote.id === Number(match.params.id))
     : null;
@@ -130,11 +152,10 @@ const App = () => {
     padding: 5
   }
 
-  const [notification, setNotification] = useState('')
-
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
+    setNotification(`A new anecdote ${anecdote.content} created!`);
   }
 
   const anecdoteById = (id) =>
@@ -153,20 +174,17 @@ const App = () => {
 
   return (
   <>
-    <Menu/>
+    <Menu />
+    <Notification notification={notification} />
     <Routes>
       <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
-      <Route path="/create" element={<CreateNew />} />
+      <Route path="/create" element={<CreateNew addNew={addNew} />} />
       <Route path="/about" element={<About />} />
-      <Route
-        path="/anecdotes/:id"
-        element={<Anecdote anecdote={anecdote} />}
-      />
+      {/* Route single anecdote */}
+      <Route path="/anecdotes/:id" element={<Anecdote anecdote={anecdote} />}/> 
     </Routes>
-    <Footer/>
+    <Footer />
 </>
-  )
-  
+  ) 
 }
-
 export default App
