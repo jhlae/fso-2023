@@ -19,8 +19,6 @@ const asObject = (anecdote) => {
   };
 };
 
-const initialStateAnecdotes = anecdotesAtStart.map(asObject);
-
 const anecdoteSlice = createSlice({
   name: "anecdotes",
   initialState: [],
@@ -30,7 +28,7 @@ const anecdoteSlice = createSlice({
     },
     insertAnecdote(state, action) {
       state.push(action.payload);
-      console.log(JSON.parse(JSON.stringify(state)));
+      // console.log(JSON.parse(JSON.stringify(state)));
       // return action.payload;
     },
     addVote(state, action) {
@@ -64,10 +62,10 @@ export const initializeAnecdotes = (anecdote) => {
   };
 };
 
-export const createNewAnecdote = (anecdoteValue) => {
+export const createNewAnecdote = (content) => {
   return {
     type: "anecdotes/insertAnecdote",
-    payload: { content: anecdoteValue, id: getId(), votes: 0 },
+    payload: content,
   };
 };
 
