@@ -4,6 +4,7 @@ import {
   initializeAnecdotes,
   addVoteToAnecdote,
 } from "../reducers/anecdoteReducer";
+import anecdoteService from "../services/anecdotes";
 
 const AnecdoteForm = () => {
   const anecdotes = useSelector((state) =>
@@ -21,9 +22,12 @@ const AnecdoteForm = () => {
   };
 
   useEffect(() => {
-    // console.log("useEffect fired");
-    dispatch(initializeAnecdotes());
-  }, [dispatch]);
+    anecdoteService.getAll().then((anecdotes) =>
+      anecdotes.forEach((anecdote) => {
+        dispatch(initializeAnecdotes(anecdote));
+      })
+    );
+  }, []);
 
   return (
     <>
