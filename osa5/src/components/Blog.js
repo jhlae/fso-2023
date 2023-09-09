@@ -55,7 +55,7 @@ const Blog = ({
   return (
     <div className="blog-details" style={blogStyle}>
       <div>
-        <span className="blog-details__title">{blog.title} -</span>
+        <span className="blog-details__title">{blog.title}</span>
         <span className="blog-details__author">{blog.author}</span>{" "}
         <button id="view-details-btn" onClick={toggleVisibility}>
           {!visible ? "show" : "hide"}
