@@ -31,3 +31,22 @@ describe("Blog app", function () {
     });
   });
 });
+
+describe("When logged in", function () {
+  beforeEach(function () {
+    cy.login({
+      username: "mrmongo",
+      password: "secret",
+    });
+  });
+
+  it("A blog can be created", function () {
+    cy.createBlog({
+      title: "A test blog post created by a testing tool",
+      author: "Cypress",
+      url: "https://google.com",
+    });
+    cy.visit("http://localhost:3000/");
+    cy.contains("A test blog post created by a testing tool");
+  });
+});
